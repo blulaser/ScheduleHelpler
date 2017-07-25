@@ -6,20 +6,21 @@ package com.sbc.sk.schedulehelper;
 2번기능 : 스케줄 등록 및 카톡 공유기능
 */
 
-import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Environment;
 import android.os.IBinder;
-import android.support.annotation.IntDef;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class AnalysisReply extends Service {
+    public DatabaseHelper dbHelper;
     public SQLiteDatabase db;
 
     public CharSequence command;
@@ -45,23 +46,8 @@ public class AnalysisReply extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         CharSequence reply;
-        int y;
         reply = intent.getCharSequenceExtra("reply");
-        y =Analysis_command(reply);
-        if(y==2){
-            Intent i = new Intent(getApplicationContext(), ShareActivity.class);
-
-            PendingIntent p = PendingIntent.getActivity(getApplicationContext(), 0, i, 0);
-            try {
-
-                p.send();
-
-            } catch (PendingIntent.CanceledException e) {
-
-                e.printStackTrace();
-
-            }
-        }
+        Analysis_command(reply);
         stopSelf(startId);
 
         return super.onStartCommand(intent, flags, startId);
@@ -73,8 +59,11 @@ public class AnalysisReply extends Service {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    public int Analysis_command(CharSequence input) {
-        db = MainActivity.returnDB();
+    public void Analysis_command(CharSequence input) {
+        dbHelper = new DatabaseHelper(getApplicationContext(), Const.DATABASE_NAME, null, Const.DATABASE_VERSION);
+        db = dbHelper.getWritableDatabase();
+
+        //db = MainActivity.returnDB();
 
         String input_s = input.toString();
         char fn_character = input_s.charAt(0);
@@ -110,7 +99,6 @@ public class AnalysisReply extends Service {
             memo = null;
 
             insertRecord((String) sc_title, (sc_year+2000), sc_month, sc_day, sc_hour, sc_min, (sc_year+2000), sc_month, sc_day, (sc_hour+1), sc_min);
-            return 1;
         }
 
         else if (fn_character == '#') {
@@ -138,23 +126,6 @@ public class AnalysisReply extends Service {
             insertRecord((String) sc_title, (sc_year+2000), sc_month, sc_day, sc_hour, sc_min, (sc_year+2000), sc_month, sc_day, (sc_hour+1), sc_min);
 
             sendRecord((String) sc_title, (sc_year+2000), sc_month, sc_day, sc_hour, sc_min, (sc_year+2000), sc_month, sc_day, (sc_hour+1), sc_min);
-            return 2;
-        }
-        else if(fn_character == '%'){
-            Intent i = new Intent(getApplicationContext(), SettingActivity.class);
-
-            PendingIntent p = PendingIntent.getActivity(getApplicationContext(), 0, i, 0);
-
-            try {
-
-                p.send();
-
-            } catch (PendingIntent.CanceledException e) {
-
-                e.printStackTrace();
-
-            }
-            return 4;
         }
 
         else {
@@ -172,7 +143,6 @@ public class AnalysisReply extends Service {
             memo = input;
 
             insertMemo((String) memo);
-            return 0;
         }
     }
 
@@ -305,6 +275,23 @@ public class AnalysisReply extends Service {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private class DatabaseHelper extends SQLiteOpenHelper {
+
+        public DatabaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
+            super(context, name, factory, version);
+        }
+
+        @Override
+        public void onCreate(SQLiteDatabase db) {
+
+        }
+
+        @Override
+        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
         }
     }
 }

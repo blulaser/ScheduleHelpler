@@ -15,63 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".ShareActivity"
-            android:label="Share Activity">
-
-        </activity>
-        <activity
-            android:name=".SettingActivity"
-            android:label="Setting Activity">
-
-        </activity>
-        <activity
-            android:name=".saveScheduleActivity"
-            android:label="Save ScheduleActivity">
-
-        </activity>
-
-
-        <service
-            android:name=".AnalysisReply"
-            android:enabled="true"
-            android:exported="true">
-        </service>
-
-
-        <service
-            android:name=".MessagingService"
-            android:enabled="true"
-            android:exported="true">
-        </service>
-        <service
-            android:name=".Service2"
-            android:enabled="true"
-            android:exported="true">
-        </service>
-        <service
-            android:name=".saveSchedule"
-            android:enabled="true"
-            android:exported="true">
-        </service>
-
-        <receiver
-            android:name=".MessageReplyReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.example.android.messagingservice.ACTION_MESSAGE_REPLY"/>
-            </intent-filter>
-        </receiver>
     </application>
 
 </manifest>
